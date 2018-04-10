@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+
+		<script>
+			var isClicked = false;
+			function isDisplayed(){
+			isClicked = !isClicked;
+						if(isClicked == true) {
+									// +'//remove old class '
+			document.getElementById("shareView").classList.remove("fadeOut");
+			document.getElementById("overlay").classList.remove("fadeOut");
+			// //overlay
+			document.getElementById("overlay").classList.add("fadeIn");
+			document.getElementById("overlay").style.display = "block";
+									// +'//rotate arrow '
+			document.getElementById("share").setAttribute("transform","rotate(180)");
+			setTimeout(function(){
+									// +'//display share icons '
+			document.getElementById("shareView").classList.add("fadeIn");
+			document.getElementById("shareView").style.display = "block";},600)
+			} else {
+									// +'//remove old class '
+			document.getElementById("shareView").classList.remove("fadeIn");
+			document.getElementById("overlay").classList.remove("fadeIn");
+									// +'//remove share icons '
+			document.getElementById("shareView").classList.add("fadeOut");
+									// +'//remove overlay'
+			document.getElementById("overlay").classList.add("fadeOut");
+			setTimeout(function(){
+			document.getElementById("shareView").style.display = "none";
+			document.getElementById("overlay").style.display = "none";
+			document.getElementById("share").style.display = "block";
+									// +'//rotate arrow'
+			document.getElementById("share").setAttribute("transform","rotate(360)");}, 300)}}
+			$(document).ready(function() {
+			$("#share-container").mousedown(function(e) {
+			var ripple = $(this).find(".ripple");
+			ripple.removeClass("animate");
+			var x = parseInt(e.pageX - $(this).offset().left) - (ripple.width() / 2);
+			var y = parseInt(e.pageY - $(this).offset().top) - (ripple.height() / 2);
+			ripple.css({top: y,left: x}).addClass("animate");});});
+		</script>
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="css/eclipseTemplateStyle.css">
+	</head>
+
+	<body>
+		<div id="template-container">
+			<div id="overlay" class="animated"></div>
+
+			<div id="header" style="background-image: url(<%= cover %>)">
+				<div class="title">
+					<h1 id="content-title"> <%= title %> </h1>
+				</div>
+			</div>
+
+			<div id="content-info">
+				<div class="logo-container">
+				<img id="logo" src="http://assets.20mn.fr/front/images/logo.jpg">
+				</div>
+				<div id="info">
+						<h2 id="content-rubrique"> <%= category %> </h2>
+						<p id="timestamp"> <%= date %> </p>
+				</div>
+				<div id="shareView" class="animated">
+						<a href="<%= fb %>">
+				<img class="shareIcons" src="img/facebook.svg" width="38%">
+				</a>
+				<br><br><br><br>
+						<a href="<%= twitter %>">
+				<img class="shareIcons" src="img/twitter.svg" width="38%">
+				</a>
+				</div>
+				<div id="share-container" onclick="isDisplayed()" class="paper">
+				<div class=ripple></div>
+				<svg id="share" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" xml:space="preserve">
+				<g><g><path d="M512,253.001L295.204,36.204v144.388C132.168,180.592,0,312.76,0,475.796c59.893-109.171,178.724-165.462,295.204-151.033v145.034L512,253.001z" fill="#004299"></path></g></g>
+				</svg>
+				</div>
+			</div>
+
+			<div id="content">
+				<%= subtitle %> <p id="content-article"> <%= content %> </p>
+			</div>
+			<div id="footer"></div>
+		</div>
+	</body>
+	</html>
+css
+img
