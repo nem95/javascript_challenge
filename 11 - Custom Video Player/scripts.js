@@ -5,11 +5,27 @@ const progressBar = document.querySelector('.progress__filled');
 const toggle = player.querySelector('.toggle');
 const skipButton = player.querySelectorAll('[data-skip]');
 const ranges = player.querySelectorAll('.player__slider');
+const fullscreen = player.querySelector('.fullscreen');
+
+let sBrowser, sUsrAg = navigator.userAgent;
+
+if(sUsrAg.indexOf("Chrome") > -1) {
+  sBrowser = "chrome";
+} else if (sUsrAg.indexOf("Safari") > -1) {
+  sBrowser = "safari";
+} else if (sUsrAg.indexOf("Opera") > -1) {
+  sBrowser = "opera";
+} else if (sUsrAg.indexOf("Firefox") > -1) {
+  sBrowser = "firefox";
+} else if (sUsrAg.indexOf("MSIE") > -1) {
+  sBrowser = "internetExplorer";
+} else {
+  sBrowser = "unknown";
+}
 
 function togglePlay() {
   /*
     // We can also use this method:
-
     const method = video.paused ? 'play' : 'pause';
     video[method]();
    */
@@ -41,11 +57,16 @@ function handleProgress() {
 }
 
 function scrub(e) {
-  console.log(e);
-  console.log(e.srcElement.offsetWidth);
-  const position = ( e.offsetX / e.srcElement.offsetWidth) * 100;
-  progressBar.style.flexBasis = `${position}%`;
+  const scrubTime = ( e.offsetX / progress.offsetWidth) * video.duration;
+  video.currentTime = scrubTime;
+}
 
+function fullscreenVideo() {
+  if (sBrowser == 'chrome') {
+    this.webkitRequestFullscreen();
+  } else if (sBrowser == 'firefox') {
+    this.mozRequestFullScreen();
+  }
 }
 
 
@@ -59,8 +80,11 @@ toggle.addEventListener('click', togglePlay);
 video.addEventListener('timeupdate', handleProgress);
 
 // Update the video when the user move the progress bar
+let mousedown = false;
 progress.addEventListener('click', scrub);
-//progress.addEventListener('mousemove', scrub);
+progress.addEventListener('mousemove', (e) => mousedown && scrub(e));
+progress.addEventListener('mousedown', () => mousedown = true);
+progress.addEventListener('mouseup', () => mousedown = false);
 
 // Skip part of the video
 skipButton.forEach(button => button.addEventListener('click', skip));
@@ -68,4 +92,8 @@ skipButton.forEach(button => button.addEventListener('click', skip));
 // Change range value
 ranges.forEach(range => range.addEventListener('change', handleRangeUpdate));
 ranges.forEach(range => range.addEventListener('mousemove', handleRangeUpdate));
+
+// Add fullscreen button
+fullscreen.addEventListener('click', fullscreenVideo);
+
 
