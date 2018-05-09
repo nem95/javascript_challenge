@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Type Ahead 👀</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<form class="search-form">
+    <input type="text" class="search" placeholder="City or State">
+    <ul class="suggestions">
+        <li>Filter for a city</li>
+        <li>or a state</li>
+    </ul>
+</form>
+
+<div id="map"></div>
+<script>
+    const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+
+    const cities = [];
+    let markers = [];
+
+    fetch(endpoint)
+        .then(blob => blob.json())
+        .then(data => cities.push(...data));
+
+    const findMathes = (wordToMatch, cities) => {
+        return cities.filter(place => {
+            const regex = new RegExp(wordToMatch, 'gi');
+            return place.city.match(regex) || place.state.match(regex);
+        });
+    };
+
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    function addMarkers(place) {
+        let position = {lat: place.latitude, lng: place.longitude};
+
+        let marker = new google.maps.Marker({
+            position: position,
+            map: map
+        });
+        markers.push(marker);
+    }
+
+    // Sets the map on all markers in the array.
+    function setMapOnAll(map) {
+        for (var i = 0; i < markers.length; i++) {
+            markers[i].setMap(map);
+        }
+    }
+
+    // Removes the markers from the map, but keeps them in the array.
+    function clearMarkers() {
+        setMapOnAll(null);
+    }
+
+    // Shows any markers currently in the array.
+    function showMarkers() {
+        setMapOnAll(map);
+    }
+
+    // Deletes all markers in the array by removing references to them.
+    function c() {
+        clearMarkers();
+        markers = [];
+    }
+
+    function displayMatches() {
+        clearMarkers();
+
+        let matchArray = findMathes(this.value, cities);
+
+        console.log(matchArray);
+        if (this.value == '') {
+            matchArray = [];
+        }
+
+        matchArray.forEach(place => {
+           return addMarkers(place);
+        });
+        const html = matchArray.map(place => {
+            var city = {lat: place.latitude, lng: place.longitude};
+
+            const regex = RegExp(this.value, 'gi');
+            const cityName = place.city.replace(regex, `<span class="hl">${this.value}</span>`);
+            const stateName = place.state.replace(regex, `<span class="hl">${this.value}</span>`);
+
+            return `
+                <li>
+                    <span class="name">${cityName}, ${stateName}</span>
+                    <span class="population">${numberWithCommas(place.population)}</span>
+                </li>
+              `;
+        }).join('');
+
+        suggestions.innerHTML = html;
+    }
+
+    const searchInput = document.querySelector('.search');
+    const suggestions = document.querySelector('.suggestions');
+
+    searchInput.addEventListener('change', displayMatches);
+    searchInput.addEventListener('keyup', displayMatches);
+
+    let map;
+
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: 40.7127837, lng: -74.0059413},
+            zoom: 5
+        });
+    }
+
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKRZ7HXAIjrrWwivJRy7Qw53LhZjOWjvc&callback=initMap" async defer></script>
+</body>
+</html>
